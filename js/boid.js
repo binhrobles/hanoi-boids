@@ -1,3 +1,37 @@
+// [street-id]: {
+//   width: pixels
+//   startingPoint: Point
+//   direction: Vector
+// }
+//
+// y = mx + (width trig'd along y)
+//
+// which x,y component do you pick to start this analysis?
+// 0, 300 + direction of (200, -100)
+//                          m = -1/2
+//                so if pos.x = 100
+//                    then mx = -50 (+ b(300))
+//                       mx+b = 250
+//                            -> with cushion of +- trig_y(width)
+//
+const STREETS = [
+  {
+    width: 100,
+    startingPoint: { x: 0, y: 400 },
+    direction: { x: 800, y: 0 },
+  },
+  {
+    width: 100,
+    startingPoint: { x: 0, y: 200 },
+    direction: { x: 1000, y: 0 },
+  },
+  {
+    width: 100,
+    startingPoint: { x: 300, y: 0 },
+    direction: { x: 0, y: 700 },
+  }
+];
+
 class Boid {
 
   /**
@@ -29,6 +63,8 @@ class Boid {
     //Force and Accel
     this.maxForce = .5;
 
+    // pick a random initial street
+    this.streetIdx = Math.floor(Math.random() * STREETS.length);
   }
 
   /**
@@ -237,11 +273,8 @@ class Boid {
    *
    */
   edgeCheck() {
-    if (walls) {
-      this.wallBounce();
-    } else {
-      this.borderWrap();
-    }
+    this.wallBounce();
+    this.borderWrap();
   }
 
   /**
@@ -266,21 +299,36 @@ class Boid {
    *
    */
   wallBounce() {
-    if (this.position.x <= this.radius) {
-      this.position.x = this.radius;
-    } else if ( this.position.x >= document.body.clientWidth - this.radius) {
-      this.position.x = document.body.clientWidth - this.radius;
+    // for the street this boid is on, get the bounding box
+    let street = STREETS[this.streetIdx];
+
+    // given an x / y direction, apply width to only x / y
+    // TODO: eventually trig
+    const relativeWidth = {
+      x: street.direction.y ? street.width / 2 : 0,
+      y: street.direction.x ? street.width / 2 : 0,
     }
-    if (this.position.y <= this.radius) {
-      this.position.y = this.radius;
-    } else if ( this.position.y >= document.body.clientHeight - this.radius ) {
-      this.position.y = document.body.clientHeight - this.radius;
+
+    // apply these boundaries
+    const minX = street.startingPoint.x - relativeWidth.x + this.radius;
+    const maxX = street.startingPoint.x + street.direction.x + relativeWidth.x - this.radius;
+
+    const minY = street.startingPoint.y - relativeWidth.y - this.radius;
+    const maxY = street.startingPoint.y + street.direction.y + relativeWidth.y - this.radius;
+
+    // left
+    if (this.position.x <= this.radius + minX) {
+      this.position.x = this.radius + minX;
+    } else if (this.position.x >= maxX) {
+      // right window boundary
+      this.position.x = maxX;
     }
-    if ( this.distanceFromHorWall() <= this.radius  ) {
-      this.velocity.invertY();
-    }
-    if ( this.distanceFromVertWall() <= this.radius  ) {
-      this.velocity.invertX();
+    // top
+    if (this.position.y <= minY) {
+      this.position.y = minY;
+    } else if ( this.position.y >= maxY ) {
+      // bottom window boundary
+      this.position.y = maxY;
     }
   }
 
