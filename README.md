@@ -26,7 +26,7 @@ This project focused on channeling them through dynamic streets / unique boid be
 
 ## Future
 - OSM import -> playable street grid
+    - or more interesting street generation
 - get dropped in as a controllable player
     - different modes: moto / car / truck / ped
 - renegades (motos who are going against the grain / disrespect "street directionality" rules)
-- more interesting
