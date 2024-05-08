@@ -17,6 +17,7 @@
 // Set up canvas
 const canvas = document.getElementById('boids');
 const c = canvas.getContext('2d');
+canvas.style.background = "#008000";
 
 // Get Firefox
 var browser = navigator.userAgent.toLowerCase();
@@ -113,14 +114,16 @@ function gaussian(mean, stdev) {
  *
  */
 function createStreets() {
+  const edgeOffset = 100;
+
   const horizontalSpan = screen.width + 150;
   const verticalSpan = screen.height + 100;
 
   const numHorizontal = gaussian(2, 2)();
-  const numVertical = gaussian(3, 2)();
+  const numVertical = gaussian(4, 2)();
 
-  const neatHorDivisions = screen.height / numHorizontal;
-  const neatVertDivisions = screen.width / numVertical;
+  const neatHorDivisions = window.innerHeight / numHorizontal;
+  const neatVertDivisions = window.innerWidth / numVertical;
 
   const width = 30;
 
@@ -128,13 +131,15 @@ function createStreets() {
     const isWestEast = Math.random() < 0.5;
     const isTwoWay = Math.random() < 0.5;
 
+    const offset = i * neatHorDivisions;
+
     STREETS.push({
       width,
       ...(isWestEast ? {
-        startingPoint: { x: -100, y: 100 + (neatHorDivisions * i) },
+        startingPoint: { x: -100, y: edgeOffset + offset },
         direction: { x: horizontalSpan, y: 0 }
       } : {
-        startingPoint: { x: horizontalSpan, y: 100 + (neatHorDivisions * i) },
+        startingPoint: { x: horizontalSpan, y: edgeOffset + offset },
         direction: { x: -horizontalSpan, y: 0 },
       }),
     });
@@ -142,10 +147,10 @@ function createStreets() {
     isTwoWay && STREETS.push({
       width,
       ...(isWestEast ? {
-        startingPoint: { x: horizontalSpan, y: 100 + width - 1 + (neatVertDivisions * i) },
+        startingPoint: { x: horizontalSpan, y: edgeOffset + width + 1 + offset },
         direction: { x: -horizontalSpan, y: 0 },
       } : {
-        startingPoint: { x: -100, y: 100 + width - 1 + (neatVertDivisions * i) },
+        startingPoint: { x: -100, y: edgeOffset + width + 1 + offset },
         direction: { x: horizontalSpan, y: 0 }
       }),
     });
@@ -155,13 +160,15 @@ function createStreets() {
     const isNorthSouth = Math.random() < 0.5;
     const isTwoWay = Math.random() < 0.5;
 
+    const offset = i * neatVertDivisions;
+
     STREETS.push({
       width,
       ...(isNorthSouth ? {
-        startingPoint: { x: 100 + (100 * i), y: -200 },
+        startingPoint: { x: edgeOffset + offset, y: -200 },
         direction: { x: 0, y: verticalSpan },
       } : {
-        startingPoint: { x: 100 + (100 * i), y: verticalSpan },
+        startingPoint: { x: edgeOffset + offset, y: verticalSpan },
         direction: { x: 0, y: -verticalSpan },
       }),
     });
@@ -169,10 +176,10 @@ function createStreets() {
     isTwoWay && STREETS.push({
       width,
       ...(isNorthSouth ? {
-        startingPoint: { x: 100 + width - 1 + (100 * i), y: verticalSpan },
+        startingPoint: { x: edgeOffset + width + 1 + offset, y: verticalSpan },
         direction: { x: 0, y: -verticalSpan },
       } : {
-        startingPoint: { x: 100 + width - 1 + (100 * i), y: -200 },
+        startingPoint: { x: edgeOffset + width + 1 + offset, y: -200 },
         direction: { x: 0, y: verticalSpan },
       }),
     });
@@ -185,10 +192,23 @@ function createStreets() {
  *
  */
 function drawStreets() {
-  // TODO: use gaussian distributions to generate and draw streets
+  // draw sidewalks
+  STREETS.forEach(street => {
+    c.lineWidth = street.width + 10;
+    c.strokeStyle = 'grey';
+    c.beginPath();
+    c.moveTo(street.startingPoint.x, street.startingPoint.y);
+    c.lineTo(
+      street.startingPoint.x + street.direction.x,
+      street.startingPoint.y + street.direction.y
+    );
+    c.stroke();
+  });
+
+  // draw streets
   STREETS.forEach(street => {
     c.lineWidth = street.width;
-    c.strokeStyle = 'grey';
+    c.strokeStyle = 'black';
     c.beginPath();
     c.moveTo(street.startingPoint.x, street.startingPoint.y);
     c.lineTo(
