@@ -17,8 +17,9 @@ class Boid {
 
     // Initial Properties
     this.id = boid.id;
+    this.type = boid.type;
     this.position = new Victor(boid.x, boid.y);
-    this.radius = boid.radius * radiusCoefficients[boid.radiusCoefficient];
+    this.radius = boid.radius * boid.radiusCoefficient;
     this.cautionCoefficient = boid.cautionCoefficient;
     this.caution = boid.caution * this.cautionCoefficient;
     this.quicknessCoefficient = boid.quicknessCoefficient;

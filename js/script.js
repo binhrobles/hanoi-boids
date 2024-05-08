@@ -72,16 +72,6 @@ function getDistance(x1, y1, x2, y2) {
 }
 
 /**
- * Returns a random color from the colors array
- *
- * @param  array | colors | An array of color values
- * @return string | The random color value
- */
-function randomColor(colors) {
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-/**
  * Get coefficients based on normal distribution
  *
  * @param  int | mean | The mean value of the data set
@@ -116,8 +106,6 @@ function gaussian(mean, stdev) {
     return -retval;
   }
 }
-var getCoefficient = gaussian(50, 9);
-var getQuicknessCoefficient = gaussian(75, 7.5);
 
 /**
  *
@@ -210,13 +198,6 @@ Victor.prototype.limitMagnitude = function(max) {
 
 /*---- Loop and Initializing ----*/
 
-// Checkbox Options
-const boidTypesEnabled = {
-  motos: true,
-  cars: true,
-  buses: true,
-}
-
 // Set number of boids based on browser and screen size
 if (firefox) {
   var maxBoids = 250;
@@ -242,19 +223,8 @@ if (size.width / 288 > 5) {
 } else {
   radius = size.width / 288;
 }
-var radiusCoefficients = [.5, .6, .7, .8, 1];
 
 // Boid Attributes
-var colors = [
-  '#4286f4',
-  '#f4416a',
-  '#41f4a0',
-  '#f9f9f9',
-  '#a341f4',
-  '#f48341',
-  '#f4e841',
-  '#42ebf4'
-];
 var quickness = 1;
 var caution = .5;
 var speedIndex;
@@ -266,6 +236,36 @@ if (size.width / 160 < 5) {
   speedIndex = size.width / 720;
 }
 
+const BOID_TYPE = {
+  MOTO: 'moto',
+  CAR: 'car',
+  BUS: 'bus',
+};
+
+const boidTypes = {
+  [BOID_TYPE.MOTO]: {
+    color: '#f9f9f9',
+    enabled: true,
+    getCautionCoefficient: gaussian(40, 9),
+    getQuicknessCoefficient: gaussian(75, 7.5),
+    radiusCoefficients: [.5, .6],
+  },
+  [BOID_TYPE.CAR]: {
+    color: '#41f4a0',
+    enabled: true,
+    getCautionCoefficient: gaussian(70, 9),
+    getQuicknessCoefficient: gaussian(45, 7.5),
+    radiusCoefficients: [.8, 1],
+  },
+  [BOID_TYPE.BUS]: {
+    color: '#f4416a',
+    enabled: true,
+    getCautionCoefficient: gaussian(50, 9),
+    getQuicknessCoefficient: gaussian(55, 7.5),
+    radiusCoefficients: [1.5, 1.7],
+  },
+}
+
 // Create Boids Array
 var boids = [];
 
@@ -274,18 +274,31 @@ var boids = [];
  *
  */
 function createBoids() {
+  // percentMotos implied by remainder
+  const percentCar = 30;
+  const percentBus = 10;
 
   // Instantiate all Boids
   for (i = 0; i < numBoids; i++) {
+    let type = BOID_TYPE.MOTO;
+    const randTypeIdx = Math.floor(Math.random() * 100);
+    if (randTypeIdx <= percentBus) {
+      type = BOID_TYPE.BUS;
+    } else if (randTypeIdx <= percentBus + percentCar) {
+      type = BOID_TYPE.CAR;
+    }
 
     // Generate caution coefficient
-    var cautionCoefficient = getCoefficient() / 100;
-    var quicknessCoefficient = getQuicknessCoefficient() / 100;
-    var radiusCoefficient = Math.floor(Math.random() * radiusCoefficients.length);
+    var cautionCoefficient = boidTypes[type].getCautionCoefficient() / 100;
+    var quicknessCoefficient = boidTypes[type].getQuicknessCoefficient() / 100;
+    var radiusCoefficient = boidTypes[type].radiusCoefficients[
+      Math.floor(Math.random() * boidTypes[type].radiusCoefficients.length)
+    ];
 
     // Generate random coords
     var x = Math.ceil(Math.random() * (size.width - (radius * 2))) + (radius);
     var y = Math.ceil(Math.random() * (size.height - (radius * 2))) + (radius);
+
     // For subsequent boids, check for collisions and generate new coords if exist
     if (i !== 0) {
       for (var j = 0; j < boids.length; j++) {
@@ -300,16 +313,17 @@ function createBoids() {
     // Add new Boid to array
     boids.push(new Boid({
       id: i,
-      x: x,
-      y: y,
-      speedIndex: speedIndex,
-      radius: radius,
-      radiusCoefficient: radiusCoefficient,
-      quickness: quickness,
-      quicknessCoefficient: quicknessCoefficient,
-      color: randomColor(colors),
-      caution: caution,
-      cautionCoefficient: cautionCoefficient
+      type,
+      color: boidTypes[type].color,
+      x,
+      y,
+      speedIndex,
+      radius,
+      radiusCoefficient,
+      quickness,
+      quicknessCoefficient,
+      caution,
+      cautionCoefficient,
     }));
   }
 
@@ -419,24 +433,24 @@ for (var i = 0; i < mobileClosers.length; i++) {
   }
 }
 
-Object.keys(boidTypesEnabled).forEach(function(type) {
+Object.keys(boidTypes).forEach(function(type) {
   const input = document.getElementById(type);
   const inputMobile = document.getElementById(`${type}-mobile`);
   input.checked = true;
   inputMobile.dataset.checked = true;
 
   input.onclick = function() {
-    console.log(`clicked ${type} setting to ${!boidTypesEnabled[type]}`);
-    boidTypesEnabled[type] = !boidTypesEnabled[type];
-    this.checked = boidTypesEnabled[type];
-    inputMobile.dataset.checked = boidTypesEnabled[type];
+    console.log(`clicked ${type} setting to ${!boidTypes[type].enabled}`);
+    boidTypes[type].enabled = !boidTypes[type].enabled;
+    this.checked = boidTypes[type].enabled;
+    inputMobile.dataset.checked = boidTypes[type].enabled;
     inputMobile.classList.toggle('boids-checkbox-on');
   }
 
   inputMobile.onclick = function() {
-    boidTypesEnabled[type] = !boidTypesEnabled[type];
-    input.checked = boidTypesEnabled[type];
-    this.dataset.checked = boidTypesEnabled[type];
+    boidTypes[type].enabled = !boidTypes[type].enabled;
+    input.checked = boidTypes[type].enabled;
+    this.dataset.checked = boidTypes[type].enabled;
     this.classList.toggle('boids-checkbox-on');
   }
 });
