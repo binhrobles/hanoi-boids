@@ -1,6 +1,8 @@
 # Hanoi
 A packed street Boid simulation.
 
+Done for a 24 hour creative code-a-thon at Recurse NGW 2024. Theme: A method to the madness
+
 Boid flocking behavior forked from  [jqlee85/boids](https://github.com/jqlee85/boids) -- this project focused on channeling them through dynamic streets / unique boid behaviors.
 
 ## Considerations
@@ -12,13 +14,14 @@ Boid flocking behavior forked from  [jqlee85/boids](https://github.com/jqlee85/b
         - street intersections become chaotic
     - flock only against boids in MY street
 - variability
-    - renegades (motos who are going against the grain / disrespect "street" rules)
     - motos vs cars vs trucks (vs peds)
         - prioritization
         - speed / turn radius
         - motos have a tendency to create "streams" for each other
-- player
-    - different modes: moto / car / truck / ped
 
 ## Future
 - OSM import -> playable street grid
+- get dropped in as a controllable player
+    - different modes: moto / car / truck / ped
+- renegades (motos who are going against the grain / disrespect "street directionality" rules)
+- more interesting
