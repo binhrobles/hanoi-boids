@@ -15,21 +15,45 @@
 //                            -> with cushion of +- trig_y(width)
 //
 const STREETS = [
+  // horizontal
   {
-    width: 100,
-    startingPoint: { x: 0, y: 400 },
-    direction: { x: 800, y: 0 },
+    width: 30,
+    startingPoint: { x: -100, y: 169 },
+    direction: { x: window.innerWidth + 200, y: 0 },
   },
   {
-    width: 100,
-    startingPoint: { x: 0, y: 200 },
-    direction: { x: 1000, y: 0 },
+    width: 30,
+    startingPoint: { x: window.innerWidth + 100, y: 200 },
+    direction: { x: -(window.innerWidth + 300), y: 0 },
+  },
+
+  {
+    width: 30,
+    startingPoint: { x: -100, y: 369 },
+    direction: { x: window.innerWidth + 200, y: 0 },
   },
   {
-    width: 100,
-    startingPoint: { x: 300, y: 0 },
-    direction: { x: 0, y: 700 },
-  }
+    width: 30,
+    startingPoint: { x: window.innerWidth + 100, y: 400 },
+    direction: { x: -(window.innerWidth + 300), y: 0 },
+  },
+
+  // vertical
+  {
+    width: 30,
+    startingPoint: { x: 300, y: -200 },
+    direction: { x: 0, y: window.innerHeight + 400 },
+  },
+  {
+    width: 50,
+    startingPoint: { x: 600, y: -200 },
+    direction: { x: 0, y: window.innerHeight + 400 },
+  },
+  {
+    width: 30,
+    startingPoint: { x: 900, y: -200 },
+    direction: { x: 0, y: window.innerHeight + 400 },
+  },
 ];
 
 class Boid {
@@ -44,8 +68,8 @@ class Boid {
 
     // Initial Properties
     this.id = boid.id;
-    this.position = new Victor( boid.x, boid.y );
-    this.radius = boid.radius * radiusCoefficients[ boid.radiusCoefficient ];
+    this.position = new Victor(boid.x, boid.y);
+    this.radius = boid.radius * radiusCoefficients[boid.radiusCoefficient];
     this.introversionCoefficient = boid.introversionCoefficient;
     this.introversion = boid.introversion * this.introversionCoefficient;
     this.quicknessCoefficient = boid.quicknessCoefficient;
@@ -53,13 +77,13 @@ class Boid {
     this.racismCoefficient = boid.racismCoefficient;
     this.racism = boid.racism * boid.racismCoefficient;
     this.color = boid.color;
-    this.mass = (4/3) * Math.PI * Math.pow( this.radius,3 );
+    this.mass = (4 / 3) * Math.PI * Math.pow(this.radius, 3);
 
     // Speed & Velocity & Force
     this.maxSpeed = speedIndex * this.quickness;
     this.speed = this.maxSpeed * .5;
-    var radians = Math.PI * getRandomInt(-99,100) / 100;
-    this.velocity = new Victor( this.speed * Math.cos( radians ), this.speed * Math.sin( radians ) );
+    var radians = Math.PI * getRandomInt(-99, 100) / 100;
+    this.velocity = new Victor(this.speed * Math.cos(radians), this.speed * Math.sin(radians));
     //Force and Accel
     this.maxForce = .5;
 
@@ -73,10 +97,10 @@ class Boid {
    * @param  object | target | The Victor.js vector for a target's position
    * @return object | The seek force for the target as a vector
    */
-  seek( target ){
+  seek(target) {
     var targetposition = target.clone();
     var diff = targetposition.subtract(this.position);
-    var desired = new Victor(diff.x,diff.y);
+    var desired = new Victor(diff.x, diff.y);
 
     if (target.radius) {
       var buffer = target.radius + this.radius + 1;
@@ -88,9 +112,9 @@ class Boid {
     if (dist < buffer) {
       desired.x = 0;
       desired.y = 0;
-    } else if ( dist <= 100 ) {
+    } else if (dist <= 100) {
       desired.normalize();
-      desired.divide({x:this.maxSpeed * dist / 100,y:this.maxSpeed * dist / 100});
+      desired.divide({ x: this.maxSpeed * dist / 100, y: this.maxSpeed * dist / 100 });
     } else {
       desired.limitMagnitude(this.maxSpeed);
     }
@@ -105,30 +129,30 @@ class Boid {
    * @param  array | boids | The boids array containing all the boids
    * @return object | The Separation force as a Victor vector
    */
-  separate( boids ){
+  separate(boids) {
     var sum = new Victor();
     var count = 0;
     for (var j = 0; j < boids.length; j++) {
-      if ( this.color != boids[j].color ) {
+      if (this.color != boids[j].color) {
         var racismMultiplier = this.racism;
       } else {
         var racismMultiplier = 0;
       }
-      var desiredSeparation = this.radius + boids[j].radius + ( 25 * this.introversion ) + ( 50 * racismMultiplier );
+      var desiredSeparation = this.radius + boids[j].radius + (25 * this.introversion) + (50 * racismMultiplier);
       var sep = this.position.clone().distance(boids[j].position);
-      if ( (sep > 0) && (sep < desiredSeparation) ) {
+      if ((sep > 0) && (sep < desiredSeparation)) {
         var thisposition = this.position.clone();
         var diff = thisposition.subtract(boids[j].position);
         diff.normalize();
-        diff.divide({x:sep,y:sep});
+        diff.divide({ x: sep, y: sep });
         sum.add(diff);
         count++;
       }
     }
     if (count > 0) {
-      sum.divide({x:count,y:count});
+      sum.divide({ x: count, y: count });
       sum.normalize();
-      sum.multiply({x:this.maxSpeed,y:this.maxSpeed});
+      sum.multiply({ x: this.maxSpeed, y: this.maxSpeed });
       sum.subtract(this.velocity);
       sum.limitMagnitude(this.maxForce);
     }
@@ -141,22 +165,24 @@ class Boid {
    * @param  array | boids | The boids array containing all the boids
    * @return object | The alignment force as a Victor vector
    */
-  align( boids ) {
+  align(boids) {
     var neighborDist = 50;
     var sum = new Victor();
     var steer = new Victor();
     var count = 0;
     for (var i = 0; i < boids.length; i++) {
       var dist = this.position.distance(boids[i].position);
-      if ( dist > 0 && dist < neighborDist ) {
+
+      // only apply alignment if other boid is w/in distance AND is on the same street
+      if (dist > 0 && dist < neighborDist && this.streetIdx === boids[i].streetIdx) {
         sum.add(boids[i].velocity);
         count++;
       }
     }
     if (count > 0) {
-      sum.divide({x:count,y:count});
+      sum.divide({ x: count, y: count });
       sum.normalize()
-      sum.multiply({x:this.maxSpeed,y:this.maxSpeed});
+      sum.multiply({ x: this.maxSpeed, y: this.maxSpeed });
       steer = sum.subtract(this.velocity);
       steer.limitMagnitude(this.maxForce);
       return steer;
@@ -171,23 +197,39 @@ class Boid {
    * @param  array | boids | The boids array containing all the boids
    * @return object | The cohesion force as a Victor vector
    */
-  cohesion( boids ) {
+  cohesion(boids) {
     var neighborDist = 50;
     var sum = new Victor();
     var count = 0;
     for (var i = 0; i < boids.length; i++) {
       var dist = this.position.distance(boids[i].position);
-      if ( dist > 0 && dist < neighborDist ) {
+
+      // only apply cohesion if other boid is w/in distance AND is on the same street
+      if (dist > 0 && dist < neighborDist && this.streetIdx === boids[i].streetIdx) {
         sum.add(boids[i].position);
         count++;
       }
     }
     if (count > 0) {
-      sum.divide({x: count,y:count});
+      sum.divide({ x: count, y: count });
       return this.seek(sum);
     } else {
       return sum;
     }
+  }
+
+  /**
+   * Calculate the "force" applied by the moving direction of the street
+   *
+   * @return object | The street "force" as a Victor vector
+   */
+  street() {
+    const direction = new Victor(
+      STREETS[this.streetIdx].direction.x,
+      STREETS[this.streetIdx].direction.y,
+    ).normalize();
+    direction.limitMagnitude(this.maxForce);
+    return direction;
   }
 
   /**
@@ -199,7 +241,7 @@ class Boid {
 
     var buffer = mobile ? 5 : 15;
 
-    if ( this.distanceFromHorWall() < this.radius * buffer || this.distanceFromVertWall() < this.radius * buffer ) {
+    if (this.distanceFromHorWall() < this.radius * buffer || this.distanceFromVertWall() < this.radius * buffer) {
       return this.seek(center);
     } else { return false; }
 
@@ -213,25 +255,27 @@ class Boid {
 
     // Get Forces
     var alignForce = this.align(boids);
-    if ( mouseSeek ) var mouseForce = this.seek(mouse.position);
+    if (mouseSeek) var mouseForce = this.seek(mouse.position);
     var separateForce = this.separate(boids);
     var cohesionForce = this.cohesion(boids);
-    if ( walls ) var avoidWallsForce = this.avoidWalls();
+    var streetForce = this.street();
+    if (walls) var avoidWallsForce = this.avoidWalls();
 
     // Weight Forces
-    var alignWeight = 1.2;
-    if ( mouseSeek ) var mouseWeight = .2;
-    var separateWeight = 1;
+    var alignWeight = 1;
+    if (mouseSeek) var mouseWeight = .2;
+    var separateWeight = 2.5;
     var cohesionWeight = 1;
-    if ( walls ) var avoidWallsWeight = 1.2;
-
+    var streetWeight = .5;
+    if (walls) var avoidWallsWeight = 1.2;
 
     // Apply forces
-    this.applyForce( alignForce, alignWeight );
-    if ( mouseSeek ) this.applyForce( mouseForce, mouseWeight );
-    this.applyForce( separateForce, separateWeight );
-    this.applyForce( cohesionForce, cohesionWeight );
-    if ( walls && avoidWallsForce ) this.applyForce( avoidWallsForce, avoidWallsWeight );
+    this.applyForce(alignForce, alignWeight);
+    if (mouseSeek) this.applyForce(mouseForce, mouseWeight);
+    this.applyForce(separateForce, separateWeight);
+    this.applyForce(cohesionForce, cohesionWeight);
+    this.applyForce(streetForce, streetWeight);
+    if (walls && avoidWallsForce) this.applyForce(avoidWallsForce, avoidWallsWeight);
 
   }
 
@@ -241,11 +285,11 @@ class Boid {
    * @param object | force | The Victor vector of the force to be applied
    * @param float | coefficient | The factor to be applied to the force
    */
-  applyForce( force, coefficient ) {
-    if ( ! coefficient ) { var coefficient = 1; }
-    force.multiply({x:coefficient,y:coefficient});
+  applyForce(force, coefficient) {
+    if (!coefficient) { var coefficient = 1; }
+    force.multiply({ x: coefficient, y: coefficient });
     this.velocity.add(force);
-    this.velocity.limitMagnitude( this.maxSpeed );
+    this.velocity.limitMagnitude(this.maxSpeed);
   }
 
   /**
@@ -261,7 +305,7 @@ class Boid {
     this.position = this.position.add(this.velocity);
 
     // Collision detection if enabled
-    if ( collisions ) { this.detectCollision(); }
+    if (collisions) { this.detectCollision(); }
 
     // Check edges for walls or overruns
     this.edgeCheck();
@@ -284,12 +328,12 @@ class Boid {
   borderWrap() {
     if (this.position.x < 0) {
       this.position.x = document.body.clientWidth;
-    } else if ( this.position.x > document.body.clientWidth ) {
+    } else if (this.position.x > document.body.clientWidth) {
       this.position.x = 0;
     }
     if (this.position.y < 0) {
       this.position.y = document.body.clientHeight;
-    } else if ( this.position.y > document.body.clientHeight ) {
+    } else if (this.position.y > document.body.clientHeight) {
       this.position.y = 0;
     }
   }
@@ -310,15 +354,23 @@ class Boid {
     }
 
     // apply these boundaries
-    const minX = street.startingPoint.x - relativeWidth.x + this.radius;
-    const maxX = street.startingPoint.x + street.direction.x + relativeWidth.x - this.radius;
+    const xRange = [
+      street.startingPoint.x - relativeWidth.x + this.radius,
+      street.startingPoint.x + street.direction.x + relativeWidth.x - this.radius,
+    ]
+    const minX = Math.min(...xRange);
+    const maxX = Math.max(...xRange);
 
-    const minY = street.startingPoint.y - relativeWidth.y - this.radius;
-    const maxY = street.startingPoint.y + street.direction.y + relativeWidth.y - this.radius;
+    const yRange = [
+      street.startingPoint.y - relativeWidth.y + this.radius,
+      street.startingPoint.y + street.direction.y + relativeWidth.y - this.radius,
+    ];
+    const minY = Math.min(...yRange);
+    const maxY = Math.max(...yRange);
 
     // left
-    if (this.position.x <= this.radius + minX) {
-      this.position.x = this.radius + minX;
+    if (this.position.x <= minX) {
+      this.position.x = minX;
     } else if (this.position.x >= maxX) {
       // right window boundary
       this.position.x = maxX;
@@ -326,7 +378,7 @@ class Boid {
     // top
     if (this.position.y <= minY) {
       this.position.y = minY;
-    } else if ( this.position.y >= maxY ) {
+    } else if (this.position.y >= maxY) {
       // bottom window boundary
       this.position.y = maxY;
     }
@@ -339,7 +391,7 @@ class Boid {
    */
   distanceFromVertWall() {
     if (this.velocity.x > 0) {
-      return document.body.clientWidth - ( this.position.x );
+      return document.body.clientWidth - (this.position.x);
     } else {
       return this.position.x;
     }
@@ -353,7 +405,7 @@ class Boid {
    */
   distanceFromHorWall() {
     if (this.velocity.y > 0) {
-      return document.body.clientHeight - ( this.position.y );
+      return document.body.clientHeight - (this.position.y);
     } else {
       return this.position.y;
     }
@@ -363,7 +415,7 @@ class Boid {
    * Draw Boid to the canvas
    *
    */
-  draw(){
+  draw() {
     c.beginPath();
     c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
     c.fillStyle = this.color;
@@ -386,28 +438,28 @@ class Boid {
    * Detect collisions between boids and resolve
    *
    */
-  detectCollision(){
+  detectCollision() {
 
     for (var i = 0; i < boids.length; i++) {
-      if ( this === boids[i] ) { continue; }
-      if ( getDistance( this.position.x, this.position.y, boids[i].position.x, boids[i].position.y) - ( this.radius + boids[i].radius ) < 0 ) {
-        this.resolveCollision( this, boids[i]);
+      if (this === boids[i]) { continue; }
+      if (getDistance(this.position.x, this.position.y, boids[i].position.x, boids[i].position.y) - (this.radius + boids[i].radius) < 0) {
+        this.resolveCollision(this, boids[i]);
       }
     }
   }
 
-/**
- * Rotates coordinate system for velocities
- * Takes velocities and alters them as if the coordinate system they're on was rotated
- *
- * @param  object | velocity | The velocity of an individual boid
- * @param  float  | angle    | The angle of collision between two objects in radians
- * @return object | The altered x and y velocities after the coordinate system has been rotated
- */
+  /**
+   * Rotates coordinate system for velocities
+   * Takes velocities and alters them as if the coordinate system they're on was rotated
+   *
+   * @param  object | velocity | The velocity of an individual boid
+   * @param  float  | angle    | The angle of collision between two objects in radians
+   * @return object | The altered x and y velocities after the coordinate system has been rotated
+   */
   rotate(velocity, angle) {
     return {
-        x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
-        y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
+      x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
+      y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
     };
   }
 
@@ -418,46 +470,46 @@ class Boid {
    * @param  object | boid      | A boid object
    * @param  object | otherBoid | A boid object
    */
-   resolveCollision(boid, otherBoid) {
+  resolveCollision(boid, otherBoid) {
 
-      var xVelocityDiff = boid.velocity.x - otherBoid.velocity.x;
-      var yVelocityDiff = boid.velocity.y - otherBoid.velocity.y;
+    var xVelocityDiff = boid.velocity.x - otherBoid.velocity.x;
+    var yVelocityDiff = boid.velocity.y - otherBoid.velocity.y;
 
-      var xDist = otherBoid.position.x - boid.position.x;
-      var yDist = otherBoid.position.y - boid.position.y;
+    var xDist = otherBoid.position.x - boid.position.x;
+    var yDist = otherBoid.position.y - boid.position.y;
 
-      // Prevent accidental overlap of boids
-      if ( xVelocityDiff * xDist + yVelocityDiff * yDist >= 0 ) {
+    // Prevent accidental overlap of boids
+    if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
 
-        // Grab angle between the two colliding boids
-        var angle = -Math.atan2(otherBoid.position.y - boid.position.y, otherBoid.position.x - boid.position.x);
+      // Grab angle between the two colliding boids
+      var angle = -Math.atan2(otherBoid.position.y - boid.position.y, otherBoid.position.x - boid.position.x);
 
-        // Store mass in var for better readability in collision equation
-        var m1 = boid.mass;
-        var m2 = otherBoid.mass;
+      // Store mass in var for better readability in collision equation
+      var m1 = boid.mass;
+      var m2 = otherBoid.mass;
 
-        // Velocity before equation
-        var u1 = this.rotate(boid.velocity, angle);
-        var u2 = this.rotate(otherBoid.velocity, angle);
+      // Velocity before equation
+      var u1 = this.rotate(boid.velocity, angle);
+      var u2 = this.rotate(otherBoid.velocity, angle);
 
-        // Velocity after 1d collision equation
-        var v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
-        var v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
+      // Velocity after 1d collision equation
+      var v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
+      var v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
 
-        // Final velocity after rotating axis back to original position
-        var vFinal1 = this.rotate(v1, -angle);
-        var vFinal2 = this.rotate(v2, -angle);
+      // Final velocity after rotating axis back to original position
+      var vFinal1 = this.rotate(v1, -angle);
+      var vFinal2 = this.rotate(v2, -angle);
 
-        // Swap boid velocities for realistic bounce effect
-        boid.velocity.x = vFinal1.x;
-        boid.velocity.y = vFinal1.y;
-        boid.velocity.limitMagnitude(boid.maxSpeed);
+      // Swap boid velocities for realistic bounce effect
+      boid.velocity.x = vFinal1.x;
+      boid.velocity.y = vFinal1.y;
+      boid.velocity.limitMagnitude(boid.maxSpeed);
 
-        otherBoid.velocity.x = vFinal2.x;
-        otherBoid.velocity.y = vFinal2.y;
-        otherBoid.velocity.limitMagnitude(otherBoid.maxSpeed);
-      }
-
+      otherBoid.velocity.x = vFinal2.x;
+      otherBoid.velocity.y = vFinal2.y;
+      otherBoid.velocity.limitMagnitude(otherBoid.maxSpeed);
     }
+
+  }
 
 }

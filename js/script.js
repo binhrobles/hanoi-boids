@@ -19,13 +19,13 @@ const canvas = document.getElementById('boids');
 const c = canvas.getContext('2d');
 
 // Get Firefox
-var browser=navigator.userAgent.toLowerCase();
-if(browser.indexOf('firefox') > -1) {
+var browser = navigator.userAgent.toLowerCase();
+if (browser.indexOf('firefox') > -1) {
   var firefox = true;
 }
 
 // Detect Mobile
-var mobile = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) ? true : false;
+var mobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ? true : false;
 
 // Set Size
 var size = {
@@ -34,11 +34,11 @@ var size = {
 }
 canvas.width = size.width;
 canvas.height = size.height;
-var center = new Victor( size.width / 2 ,size.height / 2 );
+var center = new Victor(size.width / 2, size.height / 2);
 
 // Initialize Mouse
 var mouse = {
-  position: new Victor( innerWidth / 2, innerHeight / 2 )
+  position: new Victor(innerWidth / 2, innerHeight / 2)
 };
 
 /*---- end Global Setup ----*/
@@ -68,7 +68,7 @@ function getRandomInt(min, max) {
 function getDistance(x1, y1, x2, y2) {
   var xDist = x2 - x1;
   var yDist = y2 - y1;
-  return Math.sqrt( Math.pow(xDist, 2) + Math.pow(yDist, 2) );
+  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
 }
 
 /**
@@ -78,7 +78,7 @@ function getDistance(x1, y1, x2, y2) {
  * @return string | The random color value
  */
 function randomColor(colors) {
-  return colors[ Math.floor( Math.random() * colors.length) ];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 /**
@@ -89,46 +89,65 @@ function randomColor(colors) {
  * @return int | A number from the data set
  */
 function gaussian(mean, stdev) {
-    var y2;
-    var use_last = false;
-    return function() {
-        var y1;
-        if(use_last) {
-           y1 = y2;
-           use_last = false;
-        }
-        else {
-            var x1, x2, w;
-            do {
-                 x1 = 2.0 * Math.random() - 1.0;
-                 x2 = 2.0 * Math.random() - 1.0;
-                 w  = x1 * x1 + x2 * x2;
-            } while( w >= 1.0);
-            w = Math.sqrt((-2.0 * Math.log(w))/w);
-            y1 = x1 * w;
-            y2 = x2 * w;
-            use_last = true;
-       }
+  var y2;
+  var use_last = false;
+  return function() {
+    var y1;
+    if (use_last) {
+      y1 = y2;
+      use_last = false;
+    }
+    else {
+      var x1, x2, w;
+      do {
+        x1 = 2.0 * Math.random() - 1.0;
+        x2 = 2.0 * Math.random() - 1.0;
+        w = x1 * x1 + x2 * x2;
+      } while (w >= 1.0);
+      w = Math.sqrt((-2.0 * Math.log(w)) / w);
+      y1 = x1 * w;
+      y2 = x2 * w;
+      use_last = true;
+    }
 
-       var retval = mean + stdev * y1;
-       if(retval > 0)
-           return retval;
-       return -retval;
-   }
+    var retval = mean + stdev * y1;
+    if (retval > 0)
+      return retval;
+    return -retval;
+  }
 }
 var getCoefficient = gaussian(50, 9);
-var getQuicknessCoefficient = gaussian(75,7.5);
+var getQuicknessCoefficient = gaussian(75, 7.5);
+
+/**
+ *
+ * Draw a representation of the streets onto the canvas
+ *
+ */
+function drawStreets() {
+  STREETS.forEach(street => {
+    c.lineWidth = street.width;
+    c.strokeStyle = 'grey';
+    c.beginPath();
+    c.moveTo(street.startingPoint.x, street.startingPoint.y);
+    c.lineTo(
+      street.startingPoint.x + street.direction.x,
+      street.startingPoint.y + street.direction.y
+    );
+    c.stroke();
+  });
+}
 
 /**
  * Add Limit Magnitude function to Victor objects
  *
  * @param  int | max | The limit magnitude for the vector
  */
-Victor.prototype.limitMagnitude = function (max) {
+Victor.prototype.limitMagnitude = function(max) {
 
   if (this.length() > max) {
     this.normalize();
-    this.multiply({x:max,y:max});
+    this.multiply({ x: max, y: max });
   }
 
 };
@@ -138,7 +157,7 @@ Victor.prototype.limitMagnitude = function (max) {
 /*---- Loop and Initializing ----*/
 
 // Checkbox Options
-var walls = true;
+var walls = false;
 var mouseSeek = false;
 var collisions = false;
 
@@ -152,22 +171,22 @@ if (firefox) {
 }
 var minBoids = 250;
 var numBoids = Math.sqrt(canvas.width * canvas.height) / 2;
-if ( numBoids > maxBoids ) {
+if (numBoids > maxBoids) {
   numBoids = maxBoids;
-} else if ( numBoids < minBoids ) {
+} else if (numBoids < minBoids) {
   numBoids = minBoids;
 }
 
 // Set possible radii  based on screen size
 var radius;
-if ( size.width / 288 > 5 ) {
+if (size.width / 288 > 5) {
   radius = 5;
-} else if ( size.width / 288 < 3) {
+} else if (size.width / 288 < 3) {
   radius = 3;
 } else {
   radius = size.width / 288;
 }
-var radiusCoefficients = [.5,.6,.7,.8,1];
+var radiusCoefficients = [.5, .6, .7, .8, 1];
 
 // Boid Attributes
 var colors = [
@@ -185,12 +204,12 @@ var quickness = 1;
 var introversion = .5;
 var racism = 0;
 var speedIndex;
-if ( size.width / 160 < 5 ) {
+if (size.width / 160 < 5) {
+  speedIndex = 2;
+} else if (size.width / 180 > 8) {
   speedIndex = 5;
-} else if ( size.width / 180 > 8 ) {
-  speedIndex = 9;
 } else {
-  speedIndex = size.width / 180;
+  speedIndex = size.width / 720;
 }
 
 // Create Boids Array
@@ -203,7 +222,7 @@ var boids = [];
 function createBoids() {
 
   // Instantiate all Boids
-  for ( i = 0; i < numBoids; i++ ) {
+  for (i = 0; i < numBoids; i++) {
 
     // Generate introversion coefficient
     var introversionCoefficient = getCoefficient() / 100;
@@ -212,21 +231,21 @@ function createBoids() {
     var radiusCoefficient = Math.floor(Math.random() * radiusCoefficients.length);
 
     // Generate random coords
-    var x = Math.ceil(Math.random()* ( size.width - ( radius * 2 ) ) ) + ( radius );
-    var y = Math.ceil(Math.random()* ( size.height - ( radius * 2 ) ) ) + ( radius );
+    var x = Math.ceil(Math.random() * (size.width - (radius * 2))) + (radius);
+    var y = Math.ceil(Math.random() * (size.height - (radius * 2))) + (radius);
     // For subsequent boids, check for collisions and generate new coords if exist
-    if ( i !== 0 ) {
-      for (var j = 0; j < boids.length; j++ ) {
-        if ( getDistance(x, y, boids[j].x, boids[j].y) - ( radius + boids[j].radius ) < 0 ) {
-          x = Math.ceil(Math.random()* ( size.width - ( radius * 2 ) ) ) + ( radius );
-          y = Math.ceil(Math.random()* ( size.height - ( radius * 2 ) ) ) + ( radius );
+    if (i !== 0) {
+      for (var j = 0; j < boids.length; j++) {
+        if (getDistance(x, y, boids[j].x, boids[j].y) - (radius + boids[j].radius) < 0) {
+          x = Math.ceil(Math.random() * (size.width - (radius * 2))) + (radius);
+          y = Math.ceil(Math.random() * (size.height - (radius * 2))) + (radius);
           j = -1;
         }
       }
     }
 
     // Add new Boid to array
-    boids.push( new Boid( {
+    boids.push(new Boid({
       id: i,
       x: x,
       y: y,
@@ -240,7 +259,7 @@ function createBoids() {
       racismCoefficient: racismCoefficient,
       introversion: introversion,
       introversionCoefficient: introversionCoefficient
-    } ) );
+    }));
   }
 
 }
@@ -259,21 +278,25 @@ function animate() {
   // FPS Reporting
   fpsReport++;
   if (fpsReport > 60) {
-    fpsNum.innerHTML = Math.floor(1000/elapsed);
+    fpsNum.innerHTML = Math.floor(1000 / elapsed);
     fpsReport = 0;
   }
 
   // If enough time has elapsed, draw the next frame
   if (elapsed > fpsInterval) {
-      // Get ready for next frame by setting then=now, but also adjust for your
-      // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
-      then = now - (elapsed % fpsInterval);
-      // Drawing Code
-      c.clearRect(0, 0, canvas.width, canvas.height);
-      // Update all boids
-      for (var i = 0; i < boids.length; i++ ) {
-        boids[i].update();
-      }
+
+    // Get ready for next frame by setting then=now, but also adjust for your
+    // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+    then = now - (elapsed % fpsInterval);
+    // Drawing Code
+    c.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawStreets();
+
+    // Update all boids
+    for (var i = 0; i < boids.length; i++) {
+      boids[i].update();
+    }
   }
 }
 
@@ -289,7 +312,7 @@ var fpsReport = 58;
  *
  */
 function startAnimating() {
-  if(fps == null) { var fps = 60; }
+  if (fps == null) { var fps = 60; }
   fpsInterval = 1000 / fps;
   then = Date.now();
   startTime = then;
@@ -308,7 +331,7 @@ startAnimating(60);
  * Update mouse positions on mousemove
  *
  */
-addEventListener('mousemove', function(event){
+addEventListener('mousemove', function(event) {
   mouse.position.x = event.clientX;
   mouse.position.y = event.clientY;
 });
@@ -317,14 +340,14 @@ addEventListener('mousemove', function(event){
  * Update boundary sizes on window resize
  *
  */
-addEventListener('resize', function(){
+addEventListener('resize', function() {
   size.width = innerWidth;
   size.height = innerHeight;
   canvas.width = innerWidth;
   canvas.height = innerHeight;
-  center.x = size.width/ 2;
+  center.x = size.width / 2;
   center.y = size.height / 2;
-  if ( innerWidth >= 1000 && ! mobile ) {
+  if (innerWidth >= 1000 && !mobile) {
     document.getElementById('mobile-boids-controls').style.display = 'none';
   } else {
     document.getElementById('mobile-boids-controls').style.display = 'block';
@@ -352,7 +375,7 @@ for (var i = 0; i < mobileClosers.length; i++) {
 var wallsInput = document.getElementById('walls');
 wallsInput.checked = true;
 wallsInput.onclick = function() {
-  if ( !this.checked ) {
+  if (!this.checked) {
     this.checked = false;
     wallsMobile.dataset.checked = false;
     wallsMobile.classList.toggle('boids-checkbox-on');
@@ -367,7 +390,7 @@ wallsInput.onclick = function() {
 var wallsMobile = document.getElementById('walls-mobile');
 wallsMobile.dataset.checked = true;
 wallsMobile.onclick = function() {
-  if ( this.dataset.checked == 'false') {
+  if (this.dataset.checked == 'false') {
     this.dataset.checked = true;
     wallsInput.checked = true;
     this.classList.toggle('boids-checkbox-on');
@@ -384,7 +407,7 @@ wallsMobile.onclick = function() {
 var collisionDetectionInput = document.getElementById('collision-detection');
 collisionDetectionInput.checked = false;
 collisionDetectionInput.onclick = function() {
-  if ( !this.checked ) {
+  if (!this.checked) {
     this.checked = false;
     collisionDetectionMobile.dataset.checked = false;
     collisionDetectionMobile.classList.toggle('boids-checkbox-on');
@@ -399,7 +422,7 @@ collisionDetectionInput.onclick = function() {
 var collisionDetectionMobile = document.getElementById('collisions-mobile');
 collisionDetectionMobile.dataset.checked = false;
 collisionDetectionMobile.onclick = function() {
-  if ( this.dataset.checked == 'false') {
+  if (this.dataset.checked == 'false') {
     this.dataset.checked = true;
     collisionDetectionInput.checked = true;
     this.classList.toggle('boids-checkbox-on');
@@ -416,7 +439,7 @@ collisionDetectionMobile.onclick = function() {
 var mouseSeekInput = document.getElementById('mouse-seek');
 mouseSeekInput.checked = false;
 mouseSeekInput.onclick = function() {
-  if ( !this.checked ) {
+  if (!this.checked) {
     this.checked = false;
     mouseSeekMobile.dataset.checked = false;
     mouseSeekMobile.classList.toggle('boids-checkbox-on');
@@ -431,7 +454,7 @@ mouseSeekInput.onclick = function() {
 var mouseSeekMobile = document.getElementById('mouse-seek-mobile');
 mouseSeekMobile.dataset.checked = false;
 mouseSeekMobile.onclick = function() {
-  if ( this.dataset.checked == 'false') {
+  if (this.dataset.checked == 'false') {
     this.dataset.checked = true;
     mouseSeekInput.checked = true;
     this.classList.toggle('boids-checkbox-on');
@@ -457,7 +480,7 @@ introversionMobile.onclick = function() {
   introversionControlContainer.classList.toggle('show');
 }
 function updateIntroversion(value) {
-  for (var i=0; i<boids.length; i++) {
+  for (var i = 0; i < boids.length; i++) {
     boids[i].introversion = value * boids[i].introversionCoefficient;
   }
 }
@@ -475,7 +498,7 @@ speedMobile.onclick = function() {
   speedControlContainer.classList.toggle('show');
 }
 function updateQuickness(value) {
-  for (var i=0; i<boids.length; i++) {
+  for (var i = 0; i < boids.length; i++) {
     boids[i].quickness = value * boids[i].quicknessCoefficient;
     boids[i].maxSpeed = speedIndex * boids[i].quickness;
   }
@@ -494,7 +517,7 @@ racismMobile.onclick = function() {
   racismControlContainer.classList.toggle('show');
 }
 function updateRacism(value) {
-  for (var i=0; i<boids.length; i++) {
+  for (var i = 0; i < boids.length; i++) {
     boids[i].racism = value * boids[i].racismCoefficient;
   }
 }
@@ -512,8 +535,8 @@ diversityMobile.onclick = function() {
   diversityControlContainer.classList.toggle('show');
 }
 function updateDiversity(value) {
-  for (var i=0; i<boids.length; i++) {
-    boids[i].color = colors[ i % value ];
+  for (var i = 0; i < boids.length; i++) {
+    boids[i].color = colors[i % value];
   }
 }
 
