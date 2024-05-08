@@ -245,21 +245,18 @@ const BOID_TYPE = {
 const boidTypes = {
   [BOID_TYPE.MOTO]: {
     color: '#f9f9f9',
-    enabled: true,
     getCautionCoefficient: gaussian(40, 9),
     getQuicknessCoefficient: gaussian(75, 7.5),
     radiusCoefficients: [.5, .6],
   },
   [BOID_TYPE.CAR]: {
     color: '#41f4a0',
-    enabled: true,
     getCautionCoefficient: gaussian(70, 9),
     getQuicknessCoefficient: gaussian(45, 7.5),
     radiusCoefficients: [.8, 1],
   },
   [BOID_TYPE.BUS]: {
     color: '#f4416a',
-    enabled: true,
     getCautionCoefficient: gaussian(50, 9),
     getQuicknessCoefficient: gaussian(55, 7.5),
     radiusCoefficients: [1.5, 1.7],
@@ -432,28 +429,6 @@ for (var i = 0; i < mobileClosers.length; i++) {
     document.getElementById('mobile-boids-controls').style.display = 'block';
   }
 }
-
-Object.keys(boidTypes).forEach(function(type) {
-  const input = document.getElementById(type);
-  const inputMobile = document.getElementById(`${type}-mobile`);
-  input.checked = true;
-  inputMobile.dataset.checked = true;
-
-  input.onclick = function() {
-    console.log(`clicked ${type} setting to ${!boidTypes[type].enabled}`);
-    boidTypes[type].enabled = !boidTypes[type].enabled;
-    this.checked = boidTypes[type].enabled;
-    inputMobile.dataset.checked = boidTypes[type].enabled;
-    inputMobile.classList.toggle('boids-checkbox-on');
-  }
-
-  inputMobile.onclick = function() {
-    boidTypes[type].enabled = !boidTypes[type].enabled;
-    input.checked = boidTypes[type].enabled;
-    this.dataset.checked = boidTypes[type].enabled;
-    this.classList.toggle('boids-checkbox-on');
-  }
-});
 
 // Caution
 var cautionControlContainer = document.getElementById('caution-control-container');
