@@ -157,9 +157,11 @@ Victor.prototype.limitMagnitude = function(max) {
 /*---- Loop and Initializing ----*/
 
 // Checkbox Options
-var walls = false;
-var mouseSeek = false;
-var collisions = false;
+const boidTypesEnabled = {
+  motos: true,
+  cars: true,
+  buses: true,
+}
 
 // Set number of boids based on browser and screen size
 if (firefox) {
@@ -358,10 +360,6 @@ addEventListener('resize', function() {
 
 /*---- Inputs ----*/
 
-// Hide Elements on Mobile
-document.getElementById('collisions-mobile').style.display = 'none';
-document.getElementById('mouse-seek-mobile').style.display = 'none';
-
 // Mobile Closers
 var mobileClosers = document.getElementsByClassName('boids-control-close');
 for (var i = 0; i < mobileClosers.length; i++) {
@@ -371,101 +369,27 @@ for (var i = 0; i < mobileClosers.length; i++) {
   }
 }
 
-// Walls
-var wallsInput = document.getElementById('walls');
-wallsInput.checked = true;
-wallsInput.onclick = function() {
-  if (!this.checked) {
-    this.checked = false;
-    wallsMobile.dataset.checked = false;
-    wallsMobile.classList.toggle('boids-checkbox-on');
-    walls = false;
-  } else {
-    this.checked = true;
-    wallsMobile.dataset.checked = true;
-    wallsMobile.classList.toggle('boids-checkbox-on');
-    walls = true;
-  }
-}
-var wallsMobile = document.getElementById('walls-mobile');
-wallsMobile.dataset.checked = true;
-wallsMobile.onclick = function() {
-  if (this.dataset.checked == 'false') {
-    this.dataset.checked = true;
-    wallsInput.checked = true;
-    this.classList.toggle('boids-checkbox-on');
-    walls = true;
-  } else {
-    this.dataset.checked = false;
-    wallsInput.checked = false;
-    this.classList.toggle('boids-checkbox-on');
-    walls = false;
-  }
-}
+Object.keys(boidTypesEnabled).forEach(function(type) {
+  const input = document.getElementById(type);
+  const inputMobile = document.getElementById(`${type}-mobile`);
+  input.checked = true;
+  inputMobile.dataset.checked = true;
 
-// Collision Detection
-var collisionDetectionInput = document.getElementById('collision-detection');
-collisionDetectionInput.checked = false;
-collisionDetectionInput.onclick = function() {
-  if (!this.checked) {
-    this.checked = false;
-    collisionDetectionMobile.dataset.checked = false;
-    collisionDetectionMobile.classList.toggle('boids-checkbox-on');
-    collisions = false;
-  } else {
-    this.checked = true;
-    collisionDetectionMobile.dataset.checked = true;
-    collisionDetectionMobile.classList.toggle('boids-checkbox-on');
-    collisions = true;
+  input.onclick = function() {
+    console.log(`clicked ${type} setting to ${!boidTypesEnabled[type]}`);
+    boidTypesEnabled[type] = !boidTypesEnabled[type];
+    this.checked = boidTypesEnabled[type];
+    inputMobile.dataset.checked = boidTypesEnabled[type];
+    inputMobile.classList.toggle('boids-checkbox-on');
   }
-}
-var collisionDetectionMobile = document.getElementById('collisions-mobile');
-collisionDetectionMobile.dataset.checked = false;
-collisionDetectionMobile.onclick = function() {
-  if (this.dataset.checked == 'false') {
-    this.dataset.checked = true;
-    collisionDetectionInput.checked = true;
-    this.classList.toggle('boids-checkbox-on');
-    collisions = true;
-  } else {
-    this.dataset.checked = false;
-    collisionDetectionInput.checked = false;
-    this.classList.toggle('boids-checkbox-on');
-    collisions = false;
-  }
-}
 
-// Mouse Seek
-var mouseSeekInput = document.getElementById('mouse-seek');
-mouseSeekInput.checked = false;
-mouseSeekInput.onclick = function() {
-  if (!this.checked) {
-    this.checked = false;
-    mouseSeekMobile.dataset.checked = false;
-    mouseSeekMobile.classList.toggle('boids-checkbox-on');
-    mouseSeek = false;
-  } else {
-    this.checked = true;
-    mouseSeekMobile.dataset.checked = true;
-    mouseSeekMobile.classList.toggle('boids-checkbox-on');
-    mouseSeek = true;
-  }
-}
-var mouseSeekMobile = document.getElementById('mouse-seek-mobile');
-mouseSeekMobile.dataset.checked = false;
-mouseSeekMobile.onclick = function() {
-  if (this.dataset.checked == 'false') {
-    this.dataset.checked = true;
-    mouseSeekInput.checked = true;
+  inputMobile.onclick = function() {
+    boidTypesEnabled[type] = !boidTypesEnabled[type];
+    input.checked = boidTypesEnabled[type];
+    this.dataset.checked = boidTypesEnabled[type];
     this.classList.toggle('boids-checkbox-on');
-    mouseSeek = true;
-  } else {
-    this.dataset.checked = false;
-    mouseSeekInput.checked = false;
-    this.classList.toggle('boids-checkbox-on');
-    mouseSeek = false;
   }
-}
+});
 
 // Introversion
 var introversionControlContainer = document.getElementById('introversion-control-container');

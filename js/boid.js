@@ -219,32 +219,17 @@ class Boid {
   }
 
   /**
-   * Calculate the "force" applied by the moving direction of the street
+   * Calculate the "force" applied by the directionality of the street
    *
    * @return object | The street "force" as a Victor vector
    */
-  street() {
+  directionality() {
     const direction = new Victor(
       STREETS[this.streetIdx].direction.x,
       STREETS[this.streetIdx].direction.y,
     ).normalize();
     direction.limitMagnitude(this.maxForce);
     return direction;
-  }
-
-  /**
-   * Avoid the canvas walls if walls are enabled
-   *
-   * @return object/boolean | The seek force to avoid a wall, or false if not near a wall
-   */
-  avoidWalls() {
-
-    var buffer = mobile ? 5 : 15;
-
-    if (this.distanceFromHorWall() < this.radius * buffer || this.distanceFromVertWall() < this.radius * buffer) {
-      return this.seek(center);
-    } else { return false; }
-
   }
 
   /**
@@ -255,28 +240,21 @@ class Boid {
 
     // Get Forces
     var alignForce = this.align(boids);
-    if (mouseSeek) var mouseForce = this.seek(mouse.position);
     var separateForce = this.separate(boids);
     var cohesionForce = this.cohesion(boids);
-    var streetForce = this.street();
-    if (walls) var avoidWallsForce = this.avoidWalls();
+    var streetForce = this.directionality();
 
     // Weight Forces
     var alignWeight = 1;
-    if (mouseSeek) var mouseWeight = .2;
     var separateWeight = 2.5;
     var cohesionWeight = 1;
-    var streetWeight = .5;
-    if (walls) var avoidWallsWeight = 1.2;
+    var streetWeight = .5; // TODO: weight this differently for trucks / cars
 
     // Apply forces
     this.applyForce(alignForce, alignWeight);
-    if (mouseSeek) this.applyForce(mouseForce, mouseWeight);
     this.applyForce(separateForce, separateWeight);
     this.applyForce(cohesionForce, cohesionWeight);
     this.applyForce(streetForce, streetWeight);
-    if (walls && avoidWallsForce) this.applyForce(avoidWallsForce, avoidWallsWeight);
-
   }
 
   /**
@@ -304,8 +282,7 @@ class Boid {
     // Update position
     this.position = this.position.add(this.velocity);
 
-    // Collision detection if enabled
-    if (collisions) { this.detectCollision(); }
+    this.detectCollision();
 
     // Check edges for walls or overruns
     this.edgeCheck();
