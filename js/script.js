@@ -256,7 +256,7 @@ var colors = [
   '#42ebf4'
 ];
 var quickness = 1;
-var introversion = .5;
+var caution = .5;
 var speedIndex;
 if (size.width / 160 < 5) {
   speedIndex = 2;
@@ -278,8 +278,8 @@ function createBoids() {
   // Instantiate all Boids
   for (i = 0; i < numBoids; i++) {
 
-    // Generate introversion coefficient
-    var introversionCoefficient = getCoefficient() / 100;
+    // Generate caution coefficient
+    var cautionCoefficient = getCoefficient() / 100;
     var quicknessCoefficient = getQuicknessCoefficient() / 100;
     var radiusCoefficient = Math.floor(Math.random() * radiusCoefficients.length);
 
@@ -308,8 +308,8 @@ function createBoids() {
       quickness: quickness,
       quicknessCoefficient: quicknessCoefficient,
       color: randomColor(colors),
-      introversion: introversion,
-      introversionCoefficient: introversionCoefficient
+      caution: caution,
+      cautionCoefficient: cautionCoefficient
     }));
   }
 
@@ -441,21 +441,21 @@ Object.keys(boidTypesEnabled).forEach(function(type) {
   }
 });
 
-// Introversion
-var introversionControlContainer = document.getElementById('introversion-control-container');
-var introversionInput = document.getElementById('introversion');
-introversionInput.onchange = function() {
-  introversion = this.value / 10;
-  updateIntroversion(introversion);
+// Caution
+var cautionControlContainer = document.getElementById('caution-control-container');
+var cautionInput = document.getElementById('caution');
+cautionInput.onchange = function() {
+  caution = this.value / 10;
+  updateCaution(caution);
 }
-var introversionMobile = document.getElementById('introversion-mobile');
-introversionMobile.onclick = function() {
+var cautionMobile = document.getElementById('caution-mobile');
+cautionMobile.onclick = function() {
   document.getElementById('mobile-boids-controls').style.display = 'none';
-  introversionControlContainer.classList.toggle('show');
+  cautionControlContainer.classList.toggle('show');
 }
-function updateIntroversion(value) {
+function updateCaution(value) {
   for (var i = 0; i < boids.length; i++) {
-    boids[i].introversion = value * boids[i].introversionCoefficient;
+    boids[i].caution = value * boids[i].cautionCoefficient;
   }
 }
 

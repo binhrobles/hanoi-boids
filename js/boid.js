@@ -19,8 +19,8 @@ class Boid {
     this.id = boid.id;
     this.position = new Victor(boid.x, boid.y);
     this.radius = boid.radius * radiusCoefficients[boid.radiusCoefficient];
-    this.introversionCoefficient = boid.introversionCoefficient;
-    this.introversion = boid.introversion * this.introversionCoefficient;
+    this.cautionCoefficient = boid.cautionCoefficient;
+    this.caution = boid.caution * this.cautionCoefficient;
     this.quicknessCoefficient = boid.quicknessCoefficient;
     this.quickness = boid.quickness * this.quicknessCoefficient;
     this.color = boid.color;
@@ -80,7 +80,7 @@ class Boid {
     var sum = new Victor();
     var count = 0;
     for (var j = 0; j < boids.length; j++) {
-      var desiredSeparation = this.radius + boids[j].radius + (25 * this.introversion);
+      var desiredSeparation = this.radius + boids[j].radius + (25 * this.caution);
       var sep = this.position.clone().distance(boids[j].position);
       if ((sep > 0) && (sep < desiredSeparation)) {
         var thisposition = this.position.clone();
