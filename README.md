@@ -1,8 +1,9 @@
 # Hanoi
-A packed street Boid simulation -- forked from  [jqlee85/boids](https://github.com/jqlee85/boids)
+A packed street Boid simulation.
+
+Boid flocking behavior forked from  [jqlee85/boids](https://github.com/jqlee85/boids) -- this project focused on channeling them through dynamic streets / unique boid behaviors.
 
 ## Considerations
-- plenty of Boid simulation starters
 - for streets behavior
     - need quick lookup way of understanding street width and direction (?)
     - boids do not want to go off the street
@@ -18,7 +19,6 @@ A packed street Boid simulation -- forked from  [jqlee85/boids](https://github.c
         - motos have a tendency to create "streams" for each other
 - player
     - different modes: moto / car / truck / ped
-
 
 ## Future
 - OSM import -> playable street grid
