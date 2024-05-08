@@ -116,48 +116,39 @@ function createStreets() {
   const horizontalSpan = screen.width + 150;
   const verticalSpan = screen.height + 100;
 
-  // TODO: use gaussian distributions to generate and draw streets
-  STREETS.push(
-    // horizontal
-    {
-      width: 30,
-      startingPoint: { x: -100, y: 169 },
-      direction: { x: horizontalSpan, y: 0 },
-    },
-    {
-      width: 30,
-      startingPoint: { x: horizontalSpan, y: 200 },
-      direction: { x: -horizontalSpan, y: 0 },
-    },
+  const numHorizontal = gaussian(2, 2)();
+  const numVertical = gaussian(3, 2)();
 
-    {
-      width: 30,
-      startingPoint: { x: -100, y: 369 },
-      direction: { x: horizontalSpan, y: 0 },
-    },
-    {
-      width: 30,
-      startingPoint: { x: horizontalSpan, y: 400 },
-      direction: { x: -horizontalSpan, y: 0 },
-    },
+  for (let i = 0; i < numHorizontal; i++) {
+    const isWestEast = Math.random() < 0.5;
+    STREETS.push(
+      {
+        width: 30,
+        ...(isWestEast ? {
+          startingPoint: { x: -100, y: 100 + (100 * i) },
+          direction: { x: horizontalSpan, y: 0 }
+        } : {
+          startingPoint: { x: horizontalSpan, y: 100 + (100 * i) },
+          direction: { x: -horizontalSpan, y: 0 },
+        }),
+      });
+  }
 
-    // vertical
-    {
-      width: 30,
-      startingPoint: { x: 300, y: -200 },
-      direction: { x: 0, y: verticalSpan },
-    },
-    {
-      width: 50,
-      startingPoint: { x: 600, y: -200 },
-      direction: { x: 0, y: verticalSpan },
-    },
-    {
-      width: 30,
-      startingPoint: { x: 900, y: -200 },
-      direction: { x: 0, y: verticalSpan },
-    },
-  );
+
+  for (let i = 0; i < numVertical; i++) {
+    const isNorthSouth = Math.random() < 0.5;
+    STREETS.push(
+      {
+        width: 30,
+        ...(isNorthSouth ? {
+          startingPoint: { x: 100 + (100 * i), y: -200 },
+          direction: { x: 0, y: verticalSpan },
+        } : {
+          startingPoint: { x: 100 + (100 * i), y: verticalSpan },
+          direction: { x: 0, y: -verticalSpan },
+        }),
+      });
+  }
 }
 
 /**
