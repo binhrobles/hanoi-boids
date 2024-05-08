@@ -255,7 +255,6 @@ var colors = [
   '#f4e841',
   '#42ebf4'
 ];
-var diversity = 8;
 var quickness = 1;
 var introversion = .5;
 var speedIndex;
@@ -478,23 +477,3 @@ function updateQuickness(value) {
     boids[i].maxSpeed = speedIndex * boids[i].quickness;
   }
 }
-
-// Diversity
-var diversityControlContainer = document.getElementById('diversity-control-container');
-var diversityInput = document.getElementById('diversity');
-diversityInput.onchange = function() {
-  diversity = this.value;
-  updateDiversity(diversity);
-}
-var diversityMobile = document.getElementById('diversity-mobile');
-diversityMobile.onclick = function() {
-  document.getElementById('mobile-boids-controls').style.display = 'none';
-  diversityControlContainer.classList.toggle('show');
-}
-function updateDiversity(value) {
-  for (var i = 0; i < boids.length; i++) {
-    boids[i].color = colors[i % value];
-  }
-}
-
-/*---- end Inputs ----*/
