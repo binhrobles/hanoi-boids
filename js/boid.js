@@ -248,7 +248,9 @@ class Boid {
     var alignWeight = 1;
     var separateWeight = 2.5;
     var cohesionWeight = 1;
-    var streetWeight = .5; // TODO: weight this differently for trucks / cars
+    var streetWeight = .6;
+    // TODO: weight this differently for trucks / cars
+    // TODO: cars / trucks can't move laterally to directionality
 
     // Apply forces
     this.applyForce(alignForce, alignWeight);
