@@ -285,7 +285,7 @@ const boidTypes = {
   [BOID_TYPE.MOTO]: {
     color: '#f9f9f9',
     getCautionCoefficient: gaussian(40, 9),
-    getQuicknessCoefficient: gaussian(75, 7.5),
+    getQuicknessCoefficient: gaussian(75, 15),
     radiusCoefficients: [.5, .6],
     getCohesiveness: gaussian(100, 50),
     streetWeight: 0.6,
@@ -300,8 +300,8 @@ const boidTypes = {
   },
   [BOID_TYPE.BUS]: {
     color: '#f4416a',
-    getCautionCoefficient: gaussian(50, 9),
-    getQuicknessCoefficient: gaussian(55, 7.5),
+    getCautionCoefficient: gaussian(50, 15),
+    getQuicknessCoefficient: gaussian(55, 10),
     radiusCoefficients: [1.5, 1.7],
     getCohesiveness: gaussian(20, 20),
     streetWeight: 1,
