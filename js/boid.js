@@ -23,8 +23,6 @@ class Boid {
     this.introversion = boid.introversion * this.introversionCoefficient;
     this.quicknessCoefficient = boid.quicknessCoefficient;
     this.quickness = boid.quickness * this.quicknessCoefficient;
-    this.racismCoefficient = boid.racismCoefficient;
-    this.racism = boid.racism * boid.racismCoefficient;
     this.color = boid.color;
     this.mass = (4 / 3) * Math.PI * Math.pow(this.radius, 3);
 
@@ -82,12 +80,7 @@ class Boid {
     var sum = new Victor();
     var count = 0;
     for (var j = 0; j < boids.length; j++) {
-      if (this.color != boids[j].color) {
-        var racismMultiplier = this.racism;
-      } else {
-        var racismMultiplier = 0;
-      }
-      var desiredSeparation = this.radius + boids[j].radius + (25 * this.introversion) + (50 * racismMultiplier);
+      var desiredSeparation = this.radius + boids[j].radius + (25 * this.introversion);
       var sep = this.position.clone().distance(boids[j].position);
       if ((sep > 0) && (sep < desiredSeparation)) {
         var thisposition = this.position.clone();

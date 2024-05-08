@@ -258,7 +258,6 @@ var colors = [
 var diversity = 8;
 var quickness = 1;
 var introversion = .5;
-var racism = 0;
 var speedIndex;
 if (size.width / 160 < 5) {
   speedIndex = 2;
@@ -283,7 +282,6 @@ function createBoids() {
     // Generate introversion coefficient
     var introversionCoefficient = getCoefficient() / 100;
     var quicknessCoefficient = getQuicknessCoefficient() / 100;
-    var racismCoefficient = getCoefficient() / 100;
     var radiusCoefficient = Math.floor(Math.random() * radiusCoefficients.length);
 
     // Generate random coords
@@ -311,8 +309,6 @@ function createBoids() {
       quickness: quickness,
       quicknessCoefficient: quicknessCoefficient,
       color: randomColor(colors),
-      racism: racism,
-      racismCoefficient: racismCoefficient,
       introversion: introversion,
       introversionCoefficient: introversionCoefficient
     }));
@@ -480,24 +476,6 @@ function updateQuickness(value) {
   for (var i = 0; i < boids.length; i++) {
     boids[i].quickness = value * boids[i].quicknessCoefficient;
     boids[i].maxSpeed = speedIndex * boids[i].quickness;
-  }
-}
-
-// Racism
-var racismControlContainer = document.getElementById('racism-control-container');
-var racismInput = document.getElementById('racism');
-racismInput.onchange = function() {
-  racism = this.value / 5;
-  updateRacism(racism);
-}
-var racismMobile = document.getElementById('racism-mobile');
-racismMobile.onclick = function() {
-  document.getElementById('mobile-boids-controls').style.display = 'none';
-  racismControlContainer.classList.toggle('show');
-}
-function updateRacism(value) {
-  for (var i = 0; i < boids.length; i++) {
-    boids[i].racism = value * boids[i].racismCoefficient;
   }
 }
 
