@@ -434,7 +434,7 @@ for (var i = 0; i < mobileClosers.length; i++) {
 var cautionControlContainer = document.getElementById('caution-control-container');
 var cautionInput = document.getElementById('caution');
 cautionInput.onchange = function() {
-  caution = this.value / 10;
+  caution = this.value / 8;
   updateCaution(caution);
 }
 var cautionMobile = document.getElementById('caution-mobile');
@@ -452,7 +452,7 @@ function updateCaution(value) {
 var speedControlContainer = document.getElementById('speed-control-container');
 var speedInput = document.getElementById('speed');
 speedInput.onchange = function() {
-  quickness = this.value / 10 + .5;
+  quickness = this.value / 8 + .5;
   updateQuickness(quickness);
 }
 var speedMobile = document.getElementById('speed-mobile');
