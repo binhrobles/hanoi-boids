@@ -119,35 +119,63 @@ function createStreets() {
   const numHorizontal = gaussian(2, 2)();
   const numVertical = gaussian(3, 2)();
 
+  const neatHorDivisions = screen.height / numHorizontal;
+  const neatVertDivisions = screen.width / numVertical;
+
+  const width = 30;
+
   for (let i = 0; i < numHorizontal; i++) {
     const isWestEast = Math.random() < 0.5;
-    STREETS.push(
-      {
-        width: 30,
-        ...(isWestEast ? {
-          startingPoint: { x: -100, y: 100 + (100 * i) },
-          direction: { x: horizontalSpan, y: 0 }
-        } : {
-          startingPoint: { x: horizontalSpan, y: 100 + (100 * i) },
-          direction: { x: -horizontalSpan, y: 0 },
-        }),
-      });
-  }
+    const isTwoWay = Math.random() < 0.5;
 
+    STREETS.push({
+      width,
+      ...(isWestEast ? {
+        startingPoint: { x: -100, y: 100 + (neatHorDivisions * i) },
+        direction: { x: horizontalSpan, y: 0 }
+      } : {
+        startingPoint: { x: horizontalSpan, y: 100 + (neatHorDivisions * i) },
+        direction: { x: -horizontalSpan, y: 0 },
+      }),
+    });
+
+    isTwoWay && STREETS.push({
+      width,
+      ...(isWestEast ? {
+        startingPoint: { x: horizontalSpan, y: 100 + width - 1 + (neatVertDivisions * i) },
+        direction: { x: -horizontalSpan, y: 0 },
+      } : {
+        startingPoint: { x: -100, y: 100 + width - 1 + (neatVertDivisions * i) },
+        direction: { x: horizontalSpan, y: 0 }
+      }),
+    });
+  }
 
   for (let i = 0; i < numVertical; i++) {
     const isNorthSouth = Math.random() < 0.5;
-    STREETS.push(
-      {
-        width: 30,
-        ...(isNorthSouth ? {
-          startingPoint: { x: 100 + (100 * i), y: -200 },
-          direction: { x: 0, y: verticalSpan },
-        } : {
-          startingPoint: { x: 100 + (100 * i), y: verticalSpan },
-          direction: { x: 0, y: -verticalSpan },
-        }),
-      });
+    const isTwoWay = Math.random() < 0.5;
+
+    STREETS.push({
+      width,
+      ...(isNorthSouth ? {
+        startingPoint: { x: 100 + (100 * i), y: -200 },
+        direction: { x: 0, y: verticalSpan },
+      } : {
+        startingPoint: { x: 100 + (100 * i), y: verticalSpan },
+        direction: { x: 0, y: -verticalSpan },
+      }),
+    });
+
+    isTwoWay && STREETS.push({
+      width,
+      ...(isNorthSouth ? {
+        startingPoint: { x: 100 + width - 1 + (100 * i), y: verticalSpan },
+        direction: { x: 0, y: -verticalSpan },
+      } : {
+        startingPoint: { x: 100 + width - 1 + (100 * i), y: -200 },
+        direction: { x: 0, y: verticalSpan },
+      }),
+    });
   }
 }
 
