@@ -1,60 +1,9 @@
-// [street-id]: {
+// {
 //   width: pixels
 //   startingPoint: Point
 //   direction: Vector
 // }
-//
-// y = mx + (width trig'd along y)
-//
-// which x,y component do you pick to start this analysis?
-// 0, 300 + direction of (200, -100)
-//                          m = -1/2
-//                so if pos.x = 100
-//                    then mx = -50 (+ b(300))
-//                       mx+b = 250
-//                            -> with cushion of +- trig_y(width)
-//
-const STREETS = [
-  // horizontal
-  {
-    width: 30,
-    startingPoint: { x: -100, y: 169 },
-    direction: { x: window.innerWidth + 200, y: 0 },
-  },
-  {
-    width: 30,
-    startingPoint: { x: window.innerWidth + 100, y: 200 },
-    direction: { x: -(window.innerWidth + 300), y: 0 },
-  },
-
-  {
-    width: 30,
-    startingPoint: { x: -100, y: 369 },
-    direction: { x: window.innerWidth + 200, y: 0 },
-  },
-  {
-    width: 30,
-    startingPoint: { x: window.innerWidth + 100, y: 400 },
-    direction: { x: -(window.innerWidth + 300), y: 0 },
-  },
-
-  // vertical
-  {
-    width: 30,
-    startingPoint: { x: 300, y: -200 },
-    direction: { x: 0, y: window.innerHeight + 400 },
-  },
-  {
-    width: 50,
-    startingPoint: { x: 600, y: -200 },
-    direction: { x: 0, y: window.innerHeight + 400 },
-  },
-  {
-    width: 30,
-    startingPoint: { x: 900, y: -200 },
-    direction: { x: 0, y: window.innerHeight + 400 },
-  },
-];
+const STREETS = [];
 
 class Boid {
 
@@ -319,6 +268,17 @@ class Boid {
 
   /**
    * Detect a wall hit and bounce boid
+   *
+   * TODO: to support diagonal streets
+   * y = mx + (width trig'd along y)
+   *
+   * which x,y component do you pick to start this analysis?
+   * 0, 300 + direction of (200, -100)
+   *                          m = -1/2
+   *                so if pos.x = 100
+   *                    then mx = -50 (+ b(300))
+   *                       mx+b = 250
+   *                            -> with cushion of +- trig_y(width)
    *
    */
   wallBounce() {

@@ -121,10 +121,64 @@ var getQuicknessCoefficient = gaussian(75, 7.5);
 
 /**
  *
+ * Generates random streets for this canvas
+ *
+ */
+function createStreets() {
+  const horizontalSpan = screen.width + 150;
+  const verticalSpan = screen.height + 100;
+
+  // TODO: use gaussian distributions to generate and draw streets
+  STREETS.push(
+    // horizontal
+    {
+      width: 30,
+      startingPoint: { x: -100, y: 169 },
+      direction: { x: horizontalSpan, y: 0 },
+    },
+    {
+      width: 30,
+      startingPoint: { x: horizontalSpan, y: 200 },
+      direction: { x: -horizontalSpan, y: 0 },
+    },
+
+    {
+      width: 30,
+      startingPoint: { x: -100, y: 369 },
+      direction: { x: horizontalSpan, y: 0 },
+    },
+    {
+      width: 30,
+      startingPoint: { x: horizontalSpan, y: 400 },
+      direction: { x: -horizontalSpan, y: 0 },
+    },
+
+    // vertical
+    {
+      width: 30,
+      startingPoint: { x: 300, y: -200 },
+      direction: { x: 0, y: verticalSpan },
+    },
+    {
+      width: 50,
+      startingPoint: { x: 600, y: -200 },
+      direction: { x: 0, y: verticalSpan },
+    },
+    {
+      width: 30,
+      startingPoint: { x: 900, y: -200 },
+      direction: { x: 0, y: verticalSpan },
+    },
+  );
+}
+
+/**
+ *
  * Draw a representation of the streets onto the canvas
  *
  */
 function drawStreets() {
+  // TODO: use gaussian distributions to generate and draw streets
   STREETS.forEach(street => {
     c.lineWidth = street.width;
     c.strokeStyle = 'grey';
@@ -322,6 +376,7 @@ function startAnimating() {
 }
 
 //Initalize program
+createStreets();
 createBoids();
 startAnimating(60);
 
