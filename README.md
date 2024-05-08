@@ -3,7 +3,12 @@ A packed street Boid simulation.
 
 Done for a 24 hour creative code-a-thon at Recurse NGW 2024. Theme: A method to the madness
 
-Boid flocking behavior forked from  [jqlee85/boids](https://github.com/jqlee85/boids) -- this project focused on channeling them through dynamic streets / unique boid behaviors.
+Boid flocking behavior forked from  [jqlee85/boids](https://github.com/jqlee85/boids)
+
+This project focused on channeling them through dynamic streets / unique boid behaviors.
+- Red boids are **Buses**, and they kinda rule the road
+- Green boids are **Cars**, whose owners are generally more cautious than other drivers
+- White boids are **Motos**, who are highly variable in risk and tend to flocking behavior more than the other types
 
 ## Considerations
 - for streets behavior

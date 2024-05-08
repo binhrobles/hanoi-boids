@@ -17,7 +17,7 @@
 // Set up canvas
 const canvas = document.getElementById('boids');
 const c = canvas.getContext('2d');
-canvas.style.background = "#008000";
+canvas.style.background = "#004000";
 
 // Get Firefox
 var browser = navigator.userAgent.toLowerCase();
