@@ -248,18 +248,24 @@ const boidTypes = {
     getCautionCoefficient: gaussian(40, 9),
     getQuicknessCoefficient: gaussian(75, 7.5),
     radiusCoefficients: [.5, .6],
+    getCohesiveness: gaussian(100, 50),
+    streetWeight: 0.6,
   },
   [BOID_TYPE.CAR]: {
     color: '#41f4a0',
     getCautionCoefficient: gaussian(70, 9),
     getQuicknessCoefficient: gaussian(45, 7.5),
     radiusCoefficients: [.8, 1],
+    getCohesiveness: gaussian(100, 30),
+    streetWeight: 1,
   },
   [BOID_TYPE.BUS]: {
     color: '#f4416a',
     getCautionCoefficient: gaussian(50, 9),
     getQuicknessCoefficient: gaussian(55, 7.5),
     radiusCoefficients: [1.5, 1.7],
+    getCohesiveness: gaussian(20, 20),
+    streetWeight: 1,
   },
 }
 
@@ -285,12 +291,13 @@ function createBoids() {
       type = BOID_TYPE.CAR;
     }
 
-    // Generate caution coefficient
+    // Generate coefficients
     var cautionCoefficient = boidTypes[type].getCautionCoefficient() / 100;
     var quicknessCoefficient = boidTypes[type].getQuicknessCoefficient() / 100;
     var radiusCoefficient = boidTypes[type].radiusCoefficients[
       Math.floor(Math.random() * boidTypes[type].radiusCoefficients.length)
     ];
+    const cohesiveness = boidTypes[type].getCohesiveness() / 100;
 
     // Generate random coords
     var x = Math.ceil(Math.random() * (size.width - (radius * 2))) + (radius);
@@ -321,6 +328,7 @@ function createBoids() {
       quicknessCoefficient,
       caution,
       cautionCoefficient,
+      cohesiveness,
     }));
   }
 

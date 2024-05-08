@@ -20,12 +20,15 @@ class Boid {
     this.type = boid.type;
     this.position = new Victor(boid.x, boid.y);
     this.radius = boid.radius * boid.radiusCoefficient;
+    this.color = boid.color;
+    this.mass = (4 / 3) * Math.PI * Math.pow(this.radius, 3);
+
+    // forces
     this.cautionCoefficient = boid.cautionCoefficient;
     this.caution = boid.caution * this.cautionCoefficient;
     this.quicknessCoefficient = boid.quicknessCoefficient;
     this.quickness = boid.quickness * this.quicknessCoefficient;
-    this.color = boid.color;
-    this.mass = (4 / 3) * Math.PI * Math.pow(this.radius, 3);
+    this.cohesiveness = boid.cohesiveness;
 
     // Speed & Velocity & Force
     this.maxSpeed = speedIndex * this.quickness;
@@ -190,9 +193,8 @@ class Boid {
     // Weight Forces
     var alignWeight = 1;
     var separateWeight = 2.5;
-    var cohesionWeight = 1;
-    var streetWeight = .6;
-    // TODO: weight this differently for trucks / cars
+    var cohesionWeight = this.cohesiveness;
+    var streetWeight = boidTypes[this.type].streetWeight;
     // TODO: cars / trucks can't move laterally to directionality
 
     // Apply forces
